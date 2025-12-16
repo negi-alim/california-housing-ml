@@ -12,7 +12,7 @@ def load_california_housing(n_samples=1000, features=["MedInc", "AveRooms"]):
     feat_idx = [cal_housing.feature_names.index(f) for f in features]
     X = X[:, feat_idx]
 
-    # نمونه کوچک برای سرعت
+    # small sampel for higher speed
     X = X[:n_samples]
     y = y[:n_samples]
 
@@ -27,3 +27,4 @@ def load_california_housing(n_samples=1000, features=["MedInc", "AveRooms"]):
     )
 
     return X_train, X_test, y_train, y_test
+
