@@ -2,19 +2,19 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-# Import تابع آماده‌سازی دیتا
+# Import the data preparation function
 from data_preparation import load_california_housing
 
-# --- آماده‌سازی داده‌ها ---
+# --- Prepare the data ---
 X_train, X_test, y_train, y_test = load_california_housing()
 
-# --- تعریف کلاس‌ها ---
+# --- Define labels ---
 # Binary labels: 1 = Luxury, 0 = Non-Luxury
 threshold = torch.median(y_train)
 y_train_bin = (y_train > threshold).float()
 y_test_bin = (y_test > threshold).float()
 
-# --- مدل Logistic Regression (Binary) ---
+# --- Logistic Regression Model (Binary) ---
 class BinaryHouseClassifier(nn.Module):
     def __init__(self):
         super().__init__()
@@ -24,24 +24,25 @@ class BinaryHouseClassifier(nn.Module):
         return self.linear(x)
 
 model = BinaryHouseClassifier()
-criterion = nn.BCEWithLogitsLoss()
+criterion = nn.BCEWithLogitsLoss()  # Binary cross-entropy loss
 optimizer = optim.Adam(model.parameters(), lr=0.01)
 
-# --- آموزش مدل ---
+# --- Train the model ---
 epochs = 500
 for epoch in range(epochs):
     logits = model(X_train)
-    loss = criterion(logits, y_train_bin)
+    loss = criterion(logits, y_train_bin)  # Compute the loss
 
-    optimizer.zero_grad()
-    loss.backward()
-    optimizer.step()
+    optimizer.zero_grad()  # Clear gradients
+    loss.backward()        # Backpropagation
+    optimizer.step()       # Update weights
 
-# --- ارزیابی ---
+# --- Evaluation ---
 with torch.no_grad():
-    logits_test = model(X_test)
-    probs = torch.sigmoid(logits_test)
-    preds = (probs >= 0.5).float()
-    accuracy = (preds == y_test_bin).float().mean()
+    logits_test = model(X_test)                 # Get logits on test set
+    probs = torch.sigmoid(logits_test)         # Convert logits to probabilities
+    preds = (probs >= 0.5).float()             # Threshold probabilities to get binary predictions
+    accuracy = (preds == y_test_bin).float().mean()  # Compute accuracy
 
 print(f"Binary classification accuracy: {accuracy.item():.4f}")
+
